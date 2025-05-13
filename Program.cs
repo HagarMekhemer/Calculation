@@ -1,19 +1,17 @@
+// Program.cs
 using Calculation.DSL;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Register services
-builder.Services.AddSingleton<AddService>();
-builder.Services.AddSingleton<SubtractService>();
-
-// Add controllers to the service collection
-builder.Services.AddControllers(); 
+builder.Services.AddScoped<AddService>();
+builder.Services.AddScoped<SubtractService>();
+builder.Services.AddScoped<IMathApiClientService, MathApiClientService>();
+builder.Services.AddControllers();
+builder.Services.AddLogging(logging =>
+{
+    logging.AddConsole();
+});
 
 var app = builder.Build();
-
-// Map controllers to routes
-app.MapControllers(); // This is fine as it maps the controllers to their routes
-
+app.MapControllers();
 app.Run();
-
-

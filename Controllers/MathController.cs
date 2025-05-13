@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Calculation.DSL;
+using Microsoft.Extensions.Logging;
 
 namespace Calculation.Controllers
 {
@@ -7,29 +8,31 @@ namespace Calculation.Controllers
     [ApiController]
     public class MathController : ControllerBase
     {
-        private readonly AddService _addService;
-        private readonly SubtractService _subtractService;
+        private readonly IMathApiClientService _apiClient;
+        private readonly ILogger<MathController> _logger;
 
-        public MathController(AddService addService, SubtractService subtractService)
+        public MathController(
+            IMathApiClientService apiClient,
+            ILogger<MathController> logger)
         {
-            _addService = addService;
-            _subtractService = subtractService;
+            _apiClient = apiClient;
+            _logger = logger;
         }
 
-        // Endpoint for Addition
         [HttpGet("add")]
         public IActionResult Add([FromQuery] int number1, [FromQuery] int number2)
         {
-            var result = number1 + number2;
-            return Ok(result); // Return the sum
+            _logger.LogInformation($"Controller: Received ADD request");
+            var result = _apiClient.Add(number1, number2);
+            return Ok(result);
         }
 
-        // Endpoint for Subtraction
         [HttpGet("subtract")]
         public IActionResult Subtract([FromQuery] int number1, [FromQuery] int number2)
         {
-            var result = number1 - number2;
-            return Ok(result); // Return the difference
+            _logger.LogInformation($"Controller: Received SUBTRACT request");
+            var result = _apiClient.Subtract(number1, number2);
+            return Ok(result);
         }
     }
 }
